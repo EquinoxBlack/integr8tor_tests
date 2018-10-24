@@ -1,4 +1,11 @@
 // spec.js
+
+import EmailPage from '../pages/emailPage';
+import EmailType from '../models/emailTypeModel';
+
+const emailPage = new EmailPage();
+const emailType = new EmailType();
+
 var path = require('path');
 
 describe('Integr8tor Demo App', function() {
@@ -17,7 +24,7 @@ describe('Integr8tor Demo App', function() {
         element(by.xpath("//*[@class='dropdown-menu dropdown-menu-right show']//a[@href='/settings/emails']")).click();
         let text = element(by.css("h2")).getText();
 
-        expect(text).toEqual('Email Settings');
+        expect(text).toEqual('Email setting');
       });
 
     it('should open Navbar->Modules Settings', function() {
@@ -34,7 +41,7 @@ describe('Integr8tor Demo App', function() {
         var remote = require('/usr/local/lib/node_modules/protractor/node_modules/selenium-webdriver/remote');
         browser.setFileDetector(new remote.FileDetector());
 
-        let fileName = 'test.png';
+        let fileName = 'test1.png';
         var fileToUpload = `/Users/rodion.savchuk/integr8tor_tests/files/${fileName}`;
         var absolutePath = path.resolve(__dirname, fileToUpload);
 
@@ -49,5 +56,33 @@ describe('Integr8tor Demo App', function() {
 
         // TODO
         // will add assertion after notifications implementation
+    });
+
+    it('should save email settings', function() {
+        emailPage.goto();
+        emailPage.clickSelect();
+        emailPage.selectType('smtp');
+        emailPage.fillServerField(emailType.server);
+        emailPage.fillPortField(emailType.port);
+        emailPage.clickYesRadio();
+        emailPage.fillUserField(emailType.user);
+        emailPage.fillPasswordField(emailType.password);
+        emailPage.clickSave();
+
+        emailPage.clickSelect();
+        emailPage.selectType('example');
+
+        browser.driver.sleep(10000);
+
+        expect(emailPage.userField.getAttribute('value')).not.toMatch(emailType.user);
+
+        emailPage.goto();
+        emailPage.clickSelect();
+        emailPage.selectType('smtp');
+
+        expect(emailPage.serverField.getAttribute('value')).toMatch(emailType.server);
+        expect(emailPage.portField.getAttribute('value')).toMatch(emailType.port);
+        expect(emailPage.userField.getAttribute('value')).toMatch(emailType.user);
+        expect(emailPage.passwordField.getAttribute('value')).toMatch(emailType.password);
     });
   });
