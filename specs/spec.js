@@ -2,9 +2,13 @@
 
 import EmailPage from '../pages/emailPage';
 import EmailType from '../models/emailTypeModel';
+import ModulesPage from '../pages/modulesPage';
+import ModuleSettings from '../models/moduleSettingsModel';
 
 const emailPage = new EmailPage();
 const emailType = new EmailType();
+const modulesPage = new ModulesPage();
+const moduleSettings = new ModuleSettings();
 
 var path = require('path');
 
@@ -19,7 +23,7 @@ describe('Integr8tor Demo App', function() {
       expect(browser.getTitle()).toEqual('Vue SPA Demo');
     });
 
-    it('should open Navbar->Mail Settings', function() {
+    it('should navigate to Navbar->Mail Settings', function() {
         element(by.xpath("//*[@class='navbar-toggler-icon']")).click();
         element(by.xpath("//*[@class='dropdown-menu dropdown-menu-right show']//a[@href='/settings/emails']")).click();
         let text = element(by.css("h2")).getText();
@@ -27,21 +31,21 @@ describe('Integr8tor Demo App', function() {
         expect(text).toEqual('Email setting');
       });
 
-    it('should open Navbar->Modules Settings', function() {
+    it('should navigate to Navbar->Modules Settings', function() {
         element(by.xpath("//*[@class='navbar-toggler-icon']")).click();
         element(by.xpath("//*[@class='dropdown-menu dropdown-menu-right show']//a[@href='/settings/modules']")).click();
         let text = element(by.css("h2")).getText();
 
-        expect(text).toEqual('Module Settings');
+        expect(text).toEqual('Module settings');
     });
 
-    it('should upload a file', function() {
+    it('should upload client logo', function() {
         element(by.css('.img-fluidd')).click();
 
         var remote = require('/usr/local/lib/node_modules/protractor/node_modules/selenium-webdriver/remote');
         browser.setFileDetector(new remote.FileDetector());
 
-        let fileName = 'test1.png';
+        let fileName = 'test.png';
         var fileToUpload = `/Users/rodion.savchuk/integr8tor_tests/files/${fileName}`;
         var absolutePath = path.resolve(__dirname, fileToUpload);
 
@@ -84,5 +88,48 @@ describe('Integr8tor Demo App', function() {
         expect(emailPage.portField.getAttribute('value')).toMatch(emailType.port);
         expect(emailPage.userField.getAttribute('value')).toMatch(emailType.user);
         expect(emailPage.passwordField.getAttribute('value')).toMatch(emailType.password);
+    });
+
+    it('should enable and save module settings', function() {
+        modulesPage.goto();
+        modulesPage.clickSelect();
+        modulesPage.clickOnFirstModuleInSelect();
+        modulesPage.setCheckBox();
+        modulesPage.fillDatabaseField(moduleSettings.database);
+        modulesPage.fillPathField(moduleSettings.path);
+        modulesPage.fillFriendlyNameField(moduleSettings.friendlyName);
+        modulesPage.clickSaveButton();
+        modulesPage.goto();
+
+        browser.driver.sleep(10000);
+
+        expect(modulesPage.checkModuleInListByName(moduleSettings.friendlyName)).toBeTruthy();
+        expect(modulesPage.databaseField.getAttribute('value')).toMatch(moduleSettings.database);
+        expect(modulesPage.pathField.getAttribute('value')).toMatch(moduleSettings.path);
+        expect(modulesPage.friendlyNameField.getAttribute('value')).toMatch(moduleSettings.friendlyName);
+    });
+
+    it('should upload a module icon', function() {
+        modulesPage.goto();
+        modulesPage.clickSelect();
+        modulesPage.clickOnFirstModuleInSelect();
+
+        var remote = require('/usr/local/lib/node_modules/protractor/node_modules/selenium-webdriver/remote');
+        browser.setFileDetector(new remote.FileDetector());
+
+        let fileName = 'test1.png';
+        var fileToUpload = `/Users/rodion.savchuk/integr8tor_tests/files/${fileName}`;
+        var absolutePath = path.resolve(__dirname, fileToUpload);
+
+        var fileElem = modulesPage.fileElem;
+
+        // Unhide file input
+        browser.executeScript("arguments[0].style.visibility = 'visible'; arguments[0].style.height = '1px'; arguments[0].style.width = '1px';  arguments[0].style.opacity = 1", fileElem.getWebElement());
+
+        fileElem.sendKeys(absolutePath);
+        modulesPage.clickSaveButton();
+
+        // TODO
+        // will add assertion after notifications implementation
     });
   });
