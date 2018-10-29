@@ -16,11 +16,11 @@ describe('Integr8tor Demo App', function() {
 
     beforeEach(function() {
         browser.waitForAngularEnabled(false);
-        browser.get('http://127.0.0.1:8000');
+        browser.get('http://testing.dev.edvantis.tk');
       });
 
-    it('should have a title', function() {  
-      expect(browser.getTitle()).toEqual('Vue SPA Demo');
+    it('should have a title Dashboard | Integr8tor', function() {
+      expect(browser.getTitle()).toEqual('Dashboard | Integr8tor');
     });
 
     it('should navigate to Navbar->Mail Settings', function() {
@@ -28,7 +28,7 @@ describe('Integr8tor Demo App', function() {
         element(by.xpath("//*[@class='dropdown-menu dropdown-menu-right show']//a[@href='/settings/emails']")).click();
         let text = element(by.css("h2")).getText();
 
-        expect(text).toEqual('Email setting');
+        expect(text).toEqual('Emails Settings');
       });
 
     it('should navigate to Navbar->Modules Settings', function() {
@@ -36,7 +36,7 @@ describe('Integr8tor Demo App', function() {
         element(by.xpath("//*[@class='dropdown-menu dropdown-menu-right show']//a[@href='/settings/modules']")).click();
         let text = element(by.css("h2")).getText();
 
-        expect(text).toEqual('Module settings');
+        expect(text).toEqual('Modules Settings');
     });
 
     it('should upload client logo', function() {
@@ -76,8 +76,6 @@ describe('Integr8tor Demo App', function() {
         emailPage.clickSelect();
         emailPage.selectType('example');
 
-        browser.driver.sleep(10000);
-
         expect(emailPage.userField.getAttribute('value')).not.toMatch(emailType.user);
 
         emailPage.goto();
@@ -101,8 +99,6 @@ describe('Integr8tor Demo App', function() {
         modulesPage.clickSaveButton();
         modulesPage.goto();
 
-        browser.driver.sleep(10000);
-
         expect(modulesPage.checkModuleInListByName(moduleSettings.friendlyName)).toBeTruthy();
         expect(modulesPage.databaseField.getAttribute('value')).toMatch(moduleSettings.database);
         expect(modulesPage.pathField.getAttribute('value')).toMatch(moduleSettings.path);
@@ -117,13 +113,12 @@ describe('Integr8tor Demo App', function() {
         var remote = require('/usr/local/lib/node_modules/protractor/node_modules/selenium-webdriver/remote');
         browser.setFileDetector(new remote.FileDetector());
 
-        let fileName = 'test1.png';
+        let fileName = 'test.png';
         var fileToUpload = `/Users/rodion.savchuk/integr8tor_tests/files/${fileName}`;
         var absolutePath = path.resolve(__dirname, fileToUpload);
 
         var fileElem = modulesPage.fileElem;
 
-        // Unhide file input
         browser.executeScript("arguments[0].style.visibility = 'visible'; arguments[0].style.height = '1px'; arguments[0].style.width = '1px';  arguments[0].style.opacity = 1", fileElem.getWebElement());
 
         fileElem.sendKeys(absolutePath);

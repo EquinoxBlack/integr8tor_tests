@@ -14,7 +14,7 @@ export default class ModulesPage extends BasePage {
         this.submitButton = element(by.css('.float-right'));
         this.moduleByNameXpath = "//a[@href='/settings/modules'][contains(text(),'%s')]";
 
-        this.url = 'http://localhost:8000/settings/modules';
+        this.url = 'http://testing.dev.edvantis.tk/settings/modules';
     }
 
     clickSelect() {
@@ -57,4 +57,9 @@ export default class ModulesPage extends BasePage {
         let el = this.moduleByNameXpath.replace('%s', moduleName);
         return element(by.xpath(el)).isPresent();
     }
+
+    // getNotificationText() {
+    //     let el = element(by.className("notification vue-notification success"));
+    //     return el.getAttribute('value');
+    // }
 }

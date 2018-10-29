@@ -13,7 +13,7 @@ export default class EmailPage extends BasePage {
         this.noRadioButton = element(by.xpath("//*[@class='custom-control-label']//*[contains(text(),'No')]"));
         this.submitButton = element(by.css('.float-right'));
 
-        this.url = 'http://localhost:8000/settings/emails';
+        this.url = 'http://testing.dev.edvantis.tk/settings/emails';
     }
 
     clickSelect() {
